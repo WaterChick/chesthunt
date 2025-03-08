@@ -1,0 +1,8 @@
+name: chesthunt
+version: '1.0'
+main: dev.waterchick.chesthunt.Chesthunt
+api-version: '1.21'
+authors: [ Water_Chick ]
+
+commands:
+  chesthunt:

@@ -1,0 +1,14 @@
+rarities:
+  COMMON:
+    # Name of rarity displayed in item lore
+    displayName: '&bCommon'
+    # Chance of getting the item in the chest. In percentages
+    chance: 50
+  RARE:
+    displayName: '&eRare'
+    chance: 25
+  VERY_RARE:
+    displayName: '&6Very rare'
+    chance: 10
+
+config-version: '1'

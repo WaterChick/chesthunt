@@ -1,0 +1,15 @@
+prefix: '&8[&6ChestHunt&8] &7'
+configReloaded: '&aConfig reloaded.'
+noPermission: '&cNo permission.'
+onlyPlayer: '&cOnly player may execute this command.'
+mustBeCreativeEditor: '&cYou must be in CREATIVE mode to enter GUI editor.'
+panic: '&aPanic mode enabled. Disabling plugin..'
+debugSaved: '&aSuccessfully created a debug log file in the plugin data folder.'
+
+chestHuntBegins: '&6⚔️ The Chest Hunt has begun! Search for hidden treasures! 🏆'
+chestHuntFound: '&a🎉 {player} has found a chest at &eX: {x} Y: {y} Z: {z}! &aThe treasure has been claimed! 🏅'
+chestHuntNotFound: '&c❌ No chest was found at &eX: {x} Y: {y} Z: {z}. Better luck next time 🍀'
+
+chestHuntForceStart: '&aSuccessfully force started a ChestHunt!'
+
+config-version: '2'

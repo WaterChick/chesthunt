@@ -1,0 +1,30 @@
+
+world: 'world'
+
+# Radius in world around spawn location
+radius: 250
+
+# How often should chest spawn ?
+# In minutes
+# Restart your server if you change this value!
+chest_hunt_interval: 60
+
+# How many minutes do players have to find the chest ?
+# In minutes
+# Restart your server if you change this value!
+chest_hunt_time: 30
+
+# A number of items is chosen between 1 - max_items_in_chest
+max_items_in_chest: 3
+
+# Ignore this, use /chesthunt panic to enter panic mode
+# BEWARE
+#   - all functions as interval chest hunt spawning or chest hunt force start will be disabled
+#   - use this command only if you encounter some bugs that could possibly duplicate or give corrupted items into the spawned chest
+#   - this command automatically collects all debug messages created by the plugin and creates a log file in the data folder
+panic: false
+
+# Use for debugging messages in the console
+debug: false
+
+config-version: '3'
