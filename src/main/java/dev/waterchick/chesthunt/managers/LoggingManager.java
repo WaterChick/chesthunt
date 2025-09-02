@@ -60,8 +60,18 @@ public class LoggingManager {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
         String formattedDateTime = now.format(formatter);
-        File logFile = new File(dataFolder, prefix+"-" + formattedDateTime + ".log");
-        if(isDebug() && !force){
+
+        File logsFolder = new File(dataFolder, "logs");
+        if (!logsFolder.exists()) {
+            if (logsFolder.mkdirs()) {
+                logger.info("Created logs folder: " + logsFolder.getAbsolutePath());
+            } else {
+                logger.severe("Could not create logs folder!");
+                return;
+            }
+        }
+        File logFile = new File(logsFolder, prefix+"-" + formattedDateTime + ".log");
+        if(!isDebug() && !force){
             return;
         }
         if(!debugMessages.isEmpty()) {

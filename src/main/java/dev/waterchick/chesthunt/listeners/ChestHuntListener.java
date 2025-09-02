@@ -3,6 +3,7 @@ package dev.waterchick.chesthunt.listeners;
 import dev.waterchick.chesthunt.data.TreasureChest;
 import dev.waterchick.chesthunt.enums.ConfigValue;
 import dev.waterchick.chesthunt.managers.ChestHuntManager;
+import dev.waterchick.chesthunt.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,14 +14,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class ChestHuntListener implements Listener {
     private final ChestHuntManager chestHuntManager;
+    private final JavaPlugin plugin;
 
-    public ChestHuntListener(ChestHuntManager chestHuntManager){
+    public ChestHuntListener(ChestHuntManager chestHuntManager, JavaPlugin plugin){
         this.chestHuntManager = chestHuntManager;
+        this.plugin = plugin;
     }
 
     @EventHandler
@@ -51,35 +56,52 @@ public class ChestHuntListener implements Listener {
         chestHuntFound = chestHuntFound.replace("{player}", name).replace("{x}", chestLocation.getBlockX()+"").replace("{y}", chestLocation.getBlockY()+"").replace("{z}", chestLocation.getBlockZ()+"");
         Bukkit.broadcastMessage(prefix+ chestHuntFound);
         treasureChest.setFound(true);
+
+        PlayerManager pm = PlayerManager.getInstance();
+        pm.get(player).addFoundTreasureChests();
     }
 
     @EventHandler
     public void DespawnChest(InventoryCloseEvent event){
         if (!(event.getInventory().getHolder() instanceof Chest)) {
-            return; // Není to truhla, ukončíme metodu
+            return;
         }
 
         Chest chest = (Chest) event.getInventory().getHolder();
         Location chestLocation = chest.getLocation();
         TreasureChest currentChest = chestHuntManager.getCurrentChest();
         if (chestHuntManager.getCurrentChest() == null || !currentChest.getChestLocation().equals(chestLocation)) {
-            return; // Není to naše truhla, ukončíme metodu
+            return;
         }
 
         Inventory inventory = event.getInventory();
         if (!isInventoryEmpty(inventory)) {
-            return; // Truhla není prázdná, ukončíme metodu
+            return;
         }
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+            @Override
+            public void run() {
+                chestHuntManager.stop();
+            }
+        }, 3 * 20L);
+    }
 
-        currentChest.removeChestBlock();
+    @EventHandler
+    public void ShowBossBar(PlayerJoinEvent event){
+        Player player = event.getPlayer();
+        if(!chestHuntManager.isRunning() || !chestHuntManager.isBossBarEnabled()){
+            return;
+        }
+        chestHuntManager.getBossBarManager().addPlayer(player);
     }
 
     private boolean isInventoryEmpty(Inventory inventory) {
         for (ItemStack item : inventory.getContents()) {
             if (item != null && item.getType() != Material.AIR) {
-                return false; // Truhla obsahuje itemy, není prázdná
+                return false;
             }
         }
-        return true; // Truhla je prázdná
+        return true;
     }
+
 }

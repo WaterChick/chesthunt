@@ -1,8 +1,12 @@
 name: chesthunt
-version: '1.0'
+version: '1.1'
 main: dev.waterchick.chesthunt.Chesthunt
-api-version: '1.21'
+api-version: '1.20'
 authors: [ Water_Chick ]
+
+softdepend:
+  - PlaceholderAPI
+  - Multiverse-Core
 
 commands:
   chesthunt:

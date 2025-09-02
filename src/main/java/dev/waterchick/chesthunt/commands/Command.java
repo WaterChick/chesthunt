@@ -11,6 +11,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class Command implements CommandExecutor {
 
     private final Chesthunt plugin;
@@ -27,7 +29,7 @@ public class Command implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String s, @NotNull String[] args) {
         String prefix = ConfigValue.MESSAGES_PREFIX.getValue();
         if(args.length != 1){
-            //HELP MESSAGE
+            sendHelpMessage(sender);
             return false;
         }
         if(args[0].equalsIgnoreCase("reload")){
@@ -60,6 +62,7 @@ public class Command implements CommandExecutor {
                 sender.sendMessage(prefix+ConfigValue.MESSAGES_NOPERMISSION.getValue());
                 return false;
             }
+            this.chestHuntManager.stop();
             this.chestHuntManager.start();
             sender.sendMessage(prefix+ConfigValue.MESSAGES_CHESTHUNTFORCESTART.getValue());
             return true;
@@ -82,7 +85,14 @@ public class Command implements CommandExecutor {
             LoggingManager.getInstance().saveDebug(null, true);
             return true;
         }
+        sendHelpMessage(sender);
+        return false;
+    }
 
-        return true;
+    private void sendHelpMessage(CommandSender sender){
+        List<String> helpMessage = ConfigValue.MESSAGES_HELP.getListValues();
+        for(String line : helpMessage){
+            sender.sendMessage(line);
+        }
     }
 }

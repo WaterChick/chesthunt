@@ -1,26 +1,18 @@
 package dev.waterchick.chesthunt;
 
+import dev.waterchick.chesthunt.commands.ChestHuntTabCompleter;
 import dev.waterchick.chesthunt.commands.Command;
-import dev.waterchick.chesthunt.configs.ItemsConfig;
-import dev.waterchick.chesthunt.configs.MainConfig;
-import dev.waterchick.chesthunt.configs.MessageConfig;
-import dev.waterchick.chesthunt.configs.RarityConfig;
+import dev.waterchick.chesthunt.configs.*;
 import dev.waterchick.chesthunt.enums.ConfigValue;
 import dev.waterchick.chesthunt.gui.GUIEditor;
+import dev.waterchick.chesthunt.hooks.PAPIHook;
 import dev.waterchick.chesthunt.listeners.ChestHuntListener;
 import dev.waterchick.chesthunt.listeners.GUIEditorListener;
 import dev.waterchick.chesthunt.managers.*;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.logging.Logger;
 
 public final class Chesthunt extends JavaPlugin {
 
@@ -31,8 +23,8 @@ public final class Chesthunt extends JavaPlugin {
     private RarityConfig rarityConfig;
     private MessageConfig messageConfig;
     private ChestHuntManager chestHuntManager;
+    private PlayerDataConfig playerDataConfig;
 
-    private File dataFolder;
 
     private static NamespacedKey itemIdKey;
 
@@ -43,9 +35,8 @@ public final class Chesthunt extends JavaPlugin {
     @Override
     public void onEnable() {
         LoggingManager.initialize(this);
-        this.dataFolder = getDataFolder();
         itemIdKey = new NamespacedKey(this, "item_id");
-        //LocationUtils.getRandomSafeLocation(Bukkit.getServer().getWorld("world")).getBlock().setType(Material.CHEST);
+
         this.mainConfig = new MainConfig(this.getDataFolder());
         this.mainConfig.loadConfig();
 
@@ -67,17 +58,28 @@ public final class Chesthunt extends JavaPlugin {
         this.itemsConfig = new ItemsConfig(this.getDataFolder(),itemManager, rarityManager);
         this.itemsConfig.loadConfig();
 
+        PlayerManager.initialize();
+
+        this.playerDataConfig = new PlayerDataConfig(this.getDataFolder());
+        this.playerDataConfig.loadConfig();
+
+
         this.chestHuntManager = new ChestHuntManager(itemManager, this);
 
         GUIEditor guiEditor = new GUIEditor(itemManager, rarityManager);
         GUIEditorListener guiEditorListener = new GUIEditorListener(guiEditor);
 
-        this.getCommand("chesthunt").setExecutor(new Command(this,chestHuntManager, guiEditor));
+        PluginCommand command =  this.getCommand("chesthunt");
+        if(command != null){
+             command.setExecutor(new Command(this,chestHuntManager, guiEditor));
+             command.setTabCompleter(new ChestHuntTabCompleter());
+        }
 
         this.getServer().getPluginManager().registerEvents(guiEditorListener, this);
-        this.getServer().getPluginManager().registerEvents(new ChestHuntListener(chestHuntManager), this);
+        this.getServer().getPluginManager().registerEvents(new ChestHuntListener(chestHuntManager, this), this);
 
         chestHuntManager.createRunnable();
+        initHooks();
     }
 
     @Override
@@ -88,6 +90,9 @@ public final class Chesthunt extends JavaPlugin {
         if(mainConfig != null) {
             this.mainConfig.reloadConfig();
             this.mainConfig.saveConfig();
+        }
+        if(playerDataConfig != null){
+            this.playerDataConfig.saveConfig();
         }
         this.chestHuntManager.stop();
         LoggingManager loggingManager = LoggingManager.getInstance();
@@ -109,5 +114,13 @@ public final class Chesthunt extends JavaPlugin {
 
     private void disable(){
         Bukkit.getPluginManager().disablePlugin(this);
+    }
+
+    private void initHooks(){
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+
+            new PAPIHook(this, chestHuntManager).register();
+            LoggingManager.getInstance().print("Hooked to PlaceholderAPI");
+        }
     }
 }

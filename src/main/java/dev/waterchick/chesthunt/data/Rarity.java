@@ -1,4 +1,4 @@
-package dev.waterchick.chesthunt;
+package dev.waterchick.chesthunt.data;
 
 import dev.waterchick.chesthunt.utils.ChatUtils;
 import org.bukkit.ChatColor;

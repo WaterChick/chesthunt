@@ -1,22 +1,15 @@
 package dev.waterchick.chesthunt.gui;
 
-import dev.waterchick.chesthunt.Rarity;
+import dev.waterchick.chesthunt.data.Rarity;
 import dev.waterchick.chesthunt.data.CustomItem;
 import dev.waterchick.chesthunt.managers.ItemManager;
 import dev.waterchick.chesthunt.managers.LoggingManager;
 import dev.waterchick.chesthunt.managers.RarityManager;
-import org.bukkit.ChatColor;
-import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.Inventory;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +48,12 @@ public class GUIEditor extends CustomGUI {
 
             UUID itemId = CustomItem.getItemIdFromItemStack(itemStack);
             if (itemId == null) {
-                return true; // Pokud UUID není nastaveno, nic neděláme
+                return true;
             }
 
             CustomItem customItem = itemManager.getItemById(itemId).orElse(null);
             if (customItem == null) {
-                return true; // Pokud CustomItem neexistuje, nic neděláme
+                return true;
             }
 
             Rarity currentRarity = customItem.getRarity();
@@ -89,13 +82,11 @@ public class GUIEditor extends CustomGUI {
             UUID itemId = CustomItem.getItemIdFromItemStack(itemStack);
 
             if (itemId == null) {
-                // Nový ItemStack bez PDC
                 CustomItem newItem = new CustomItem(itemStack, rarityManager.getDefaultRarity());
                 CustomItem.setItemIdToItemStack(itemStack, newItem.getId());
 
                 updatedItems.add(newItem);
             } else {
-                // Existující ItemStack s PDC
                 Optional<CustomItem> optionalCustomItem = itemManager.getItemById(itemId);
                 if (optionalCustomItem.isPresent()) {
                     CustomItem customItem = optionalCustomItem.get();
@@ -104,7 +95,6 @@ public class GUIEditor extends CustomGUI {
                     customItem.setItemStack(itemStack);
                     updatedItems.add(customItem);
                 }else{
-                    // Item s UUID, ale nebyl v původním listu - může se stát, pokud byl přidán během editace a pak prohozen
                     CustomItem newItem = new CustomItem(itemStack, rarityManager.getDefaultRarity());
                     CustomItem.setItemIdToItemStack(itemStack, newItem.getId());
                     updatedItems.add(newItem);

@@ -1,6 +1,6 @@
 package dev.waterchick.chesthunt.managers;
 
-import dev.waterchick.chesthunt.Rarity;
+import dev.waterchick.chesthunt.data.Rarity;
 
 import java.util.ArrayList;
 import java.util.Collections;

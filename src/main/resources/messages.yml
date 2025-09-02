@@ -11,5 +11,25 @@ chestHuntFound: '&a🎉 {player} has found a chest at &eX: {x} Y: {y} Z: {z}! &a
 chestHuntNotFound: '&c❌ No chest was found at &eX: {x} Y: {y} Z: {z}. Better luck next time 🍀'
 
 chestHuntForceStart: '&aSuccessfully force started a ChestHunt!'
+chestHuntStartsIn: '&aChest hunt will begin in {minutes} minutes! Get ready!'
 
-config-version: '2'
+chestHuntStartedTitle: '&7Chest hunt'
+chestHuntStartedSubtitle: '&astarted! Have Fun'
+
+# Placeholder: %chesthunt_active%
+placeholderActiveYes: '&a✔'
+placeholderActiveNo: '&c✘'
+
+bossBarRunning: '&6⏳ Chest Hunt is active! Time left: &e{time}'
+bossBarFound: '&a✔ The treasure has been found! Well done!'
+bossBarTimeout: '&c✖ Time is up! Nobody found the chest.'
+
+help:
+  - '&7Commands Help:'
+  - '  - &6/chesthunt reload &7- &eReload the plugin configuration files.'
+  - '  - &6/chesthunt gui &7- &eOpen the Chest Hunt GUI editor in Creative mode.'
+  - '  - &6/chesthunt forcestart &7- &eForce start a Chest Hunt event.'
+  - '  - &6/chesthunt panic &7- &eEnable panic mode to stop and disable the plugin.'
+  - '  - &6/chesthunt savedebug &7- &eSave a debug log file.'
+
+config-version: '6'
