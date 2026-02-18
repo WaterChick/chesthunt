@@ -1,8 +1,6 @@
 
 world: 'world'
 
-# Defines how high can the chest be spawned
-world_maxy: '65'
 
 # Radius in world around spawn location
 radius: 250

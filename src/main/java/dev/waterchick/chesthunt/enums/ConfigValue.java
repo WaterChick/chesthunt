@@ -5,7 +5,6 @@ import java.util.List;
 public enum ConfigValue {
     RADIUS("250"),
     WORLD("world"),
-    WORLD_MAXY("65"),
     DEBUG("false"),
     MAX_ITEMS_IN_CHEST("3"),
     CHEST_HUNT_TIME("30"),

@@ -60,16 +60,19 @@ public class ChestHuntManager {
         World world = Bukkit.getWorld(ConfigValue.WORLD.getValue());
         if (world == null) {
             CHESTERROR.INVALIDWORLD.throwError();
+            logger.debug(CHESTERROR.INVALIDWORLD.message);
             return;
         }
         List<CustomItem> itemStacks = this.itemManager.getItems();
         if (itemStacks.isEmpty()) {
             CHESTERROR.NOITEMSLOADED.throwError();
+            logger.debug(CHESTERROR.NOITEMSLOADED.message);
             return;
         }
         Location safeLocation = LocationUtils.getRandomSafeLocation(world);
         if(safeLocation == null){
             CHESTERROR.COULDNTFINDLOCATION.throwError();
+            logger.debug(CHESTERROR.COULDNTFINDLOCATION.message);
             return;
         }
         int maxItemsInChest = Integer.parseInt(ConfigValue.MAX_ITEMS_IN_CHEST.getValue());
