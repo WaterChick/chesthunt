@@ -40,7 +40,6 @@ public class ChestHuntManager {
     enum CHESTERROR{
         INVALIDWORLD("The specified world could not be found. Please check the world name in your configuration."),
         NOITEMSLOADED("No items were loaded. Please ensure that your items are properly configured and loaded."),
-        COULDNTFINDLOCATION("Could not find a safe chest location. Please ensure that WORLD_MAXY is set correctly and allows safe spawning.")
         ;
 
         private final String message;
@@ -69,57 +68,50 @@ public class ChestHuntManager {
             logger.debug(CHESTERROR.NOITEMSLOADED.message);
             return;
         }
-        Location safeLocation = LocationUtils.getRandomSafeLocation(world);
-        if(safeLocation == null){
-            CHESTERROR.COULDNTFINDLOCATION.throwError();
-            logger.debug(CHESTERROR.COULDNTFINDLOCATION.message);
-            return;
-        }
-        int maxItemsInChest = Integer.parseInt(ConfigValue.MAX_ITEMS_IN_CHEST.getValue());
-        int numOfItemsInChest = random.nextInt(1, Math.min(itemStacks.size(), maxItemsInChest) + 1); // Počet itemů v truhle nemůže být větší než počet dostupných itemů
+        LocationUtils.findRandomSafeLocation(world, plugin, safeLocation -> {
+            int maxItemsInChest = Integer.parseInt(ConfigValue.MAX_ITEMS_IN_CHEST.getValue());
+            int numOfItemsInChest = random.nextInt(1, Math.min(itemStacks.size(), maxItemsInChest) + 1);
 
-        logger.debug("New treasure chest spawned.");
-        logger.debug("Created a treasure chest: ");
-        logger.debug("  Number of items to select: " + numOfItemsInChest);
+            logger.debug("New treasure chest spawned.");
+            logger.debug("Created a treasure chest: ");
+            logger.debug("  Number of items to select: " + numOfItemsInChest);
 
-        Bukkit.broadcastMessage(ConfigValue.MESSAGES_PREFIX.getValue() + ConfigValue.MESSAGES_CHESTHUNTBEGINS.getValue());
-        for(Player player : Bukkit.getOnlinePlayers()){
-            player.sendTitle(ConfigValue.MESSAGES_CHESTHUNTSTARTEDTITLE.getValue(), ConfigValue.MESSAGES_CHESTHUNTSTARTEDSUBTITLE.getValue(), 20, 60, 20);
-        }
-
-        int durationSeconds = Integer.parseInt(ConfigValue.CHEST_HUNT_TIME.getValue()) * 60;
-
-        scheduleChestRemoval(durationSeconds);
-
-
-
-        List<CustomItem> sortedItems = new ArrayList<>(itemStacks);
-        // Sort items by their rarity
-        sortedItems.sort(Comparator.comparingInt((CustomItem customItem) -> customItem.getRarity().getChance()).reversed());
-
-        List<CustomItem> weightedList = new ArrayList<>();
-        for (CustomItem item : sortedItems) {
-            int chance = item.getRarity().getChance();
-            for (int i = 0; i < chance; i++) {
-                weightedList.add(item);
+            Bukkit.broadcastMessage(ConfigValue.MESSAGES_PREFIX.getValue() + ConfigValue.MESSAGES_CHESTHUNTBEGINS.getValue());
+            for(Player player : Bukkit.getOnlinePlayers()){
+                player.sendTitle(ConfigValue.MESSAGES_CHESTHUNTSTARTEDTITLE.getValue(), ConfigValue.MESSAGES_CHESTHUNTSTARTEDSUBTITLE.getValue(), 20, 60, 20);
             }
-        }
-        List<CustomItem> chestItems = new ArrayList<>();
-        List<CustomItem> tempWeightedList = new ArrayList<>(weightedList);
-        Set<UUID> selectedIds = new HashSet<>();
-        while (chestItems.size() < numOfItemsInChest && !tempWeightedList.isEmpty()) {
-            int randomIndex = random.nextInt(tempWeightedList.size());
-            CustomItem selectedItem = tempWeightedList.remove(randomIndex);
-            if (selectedIds.add(selectedItem.getId())) {
-                chestItems.add(selectedItem);
+
+            int durationSeconds = Integer.parseInt(ConfigValue.CHEST_HUNT_TIME.getValue()) * 60;
+
+            scheduleChestRemoval(durationSeconds);
+
+            List<CustomItem> sortedItems = new ArrayList<>(itemStacks);
+            sortedItems.sort(Comparator.comparingInt((CustomItem customItem) -> customItem.getRarity().getChance()).reversed());
+
+            List<CustomItem> weightedList = new ArrayList<>();
+            for (CustomItem item : sortedItems) {
+                int chance = item.getRarity().getChance();
+                for (int i = 0; i < chance; i++) {
+                    weightedList.add(item);
+                }
             }
-        }
-        this.currentChest = new TreasureChest(safeLocation, chestItems);
-        this.currentChest.createChestBlockWithContents();
-        if(isBossBarEnabled()) {
-            this.bossBarManager = new BossBarManager(plugin, currentChest);
-            this.bossBarManager.startBossBar(durationSeconds);
-        }
+            List<CustomItem> chestItems = new ArrayList<>();
+            List<CustomItem> tempWeightedList = new ArrayList<>(weightedList);
+            Set<UUID> selectedIds = new HashSet<>();
+            while (chestItems.size() < numOfItemsInChest && !tempWeightedList.isEmpty()) {
+                int randomIndex = random.nextInt(tempWeightedList.size());
+                CustomItem selectedItem = tempWeightedList.remove(randomIndex);
+                if (selectedIds.add(selectedItem.getId())) {
+                    chestItems.add(selectedItem);
+                }
+            }
+            this.currentChest = new TreasureChest(safeLocation, chestItems);
+            this.currentChest.createChestBlockWithContents();
+            if(isBossBarEnabled()) {
+                this.bossBarManager = new BossBarManager(plugin, currentChest);
+                this.bossBarManager.startBossBar(durationSeconds);
+            }
+        });
     }
 
     public void createRunnable() {
