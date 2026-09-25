@@ -28,69 +28,117 @@ public class Command implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String s, @NotNull String[] args) {
         String prefix = ConfigValue.MESSAGES_PREFIX.getValue();
+
+        if(args.length >= 1 && args[0].equalsIgnoreCase("setcenter")) {
+
+            if(!sender.hasPermission("chesthunt.setcenter")){
+                sender.sendMessage(prefix + ConfigValue.MESSAGES_NOPERMISSION.getValue());
+                return false;
+            }
+
+            if(args.length != 3){
+                sender.sendMessage(prefix + ConfigValue.MESSAGES_SETCENTER_SUCCESS.getValue());
+                return false;
+            }
+
+            int x;
+            int z;
+
+            try {
+                x = Integer.parseInt(args[1]);
+                z = Integer.parseInt(args[2]);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(prefix + ConfigValue.MESSAGES_SETCENTER_FAILED.getValue());
+                return false;
+            }
+
+            ConfigValue.CENTER_X.setValue(String.valueOf(x));
+            ConfigValue.CENTER_Z.setValue(String.valueOf(z));
+
+            this.plugin.getMainConfig().saveConfig();
+
+            sender.sendMessage(prefix + "Chest Hunt center set to X: " + x + " Z: " + z);
+
+            return true;
+        }
+
         if(args.length != 1){
             sendHelpMessage(sender);
             return false;
         }
+
         if(args[0].equalsIgnoreCase("reload")){
             if(!sender.hasPermission("chesthunt.reload")){
-                sender.sendMessage(prefix+ConfigValue.MESSAGES_NOPERMISSION.getValue());
+                sender.sendMessage(prefix + ConfigValue.MESSAGES_NOPERMISSION.getValue());
                 return false;
             }
+
             this.plugin.reloadConfigs();
-            sender.sendMessage(prefix+ConfigValue.MESSAGES_CONFIGRELOADED.getValue());
+            sender.sendMessage(prefix + ConfigValue.MESSAGES_CONFIGRELOADED.getValue());
             return true;
         }
+
         if(args[0].equalsIgnoreCase("gui")){
             if(!sender.hasPermission("chesthunt.gui")){
-                sender.sendMessage(prefix+ConfigValue.MESSAGES_NOPERMISSION.getValue());
+                sender.sendMessage(prefix + ConfigValue.MESSAGES_NOPERMISSION.getValue());
                 return false;
             }
+
             if(!(sender instanceof Player player)){
-                sender.sendMessage(prefix+ConfigValue.MESSAGES_ONLYPLAYER.getValue());
+                sender.sendMessage(prefix + ConfigValue.MESSAGES_ONLYPLAYER.getValue());
                 return false;
             }
+
             if(player.getGameMode() != GameMode.CREATIVE){
-                player.sendMessage(prefix+ConfigValue.MESSAGES_MUSTBECREATIVEEDITOR.getValue());
+                player.sendMessage(prefix + ConfigValue.MESSAGES_MUSTBECREATIVEEDITOR.getValue());
                 return false;
             }
+
             guiEditor.openInventory(player);
             return true;
         }
+
         if(args[0].equalsIgnoreCase("forcestart")){
             if(!sender.hasPermission("chesthunt.forcestart")){
-                sender.sendMessage(prefix+ConfigValue.MESSAGES_NOPERMISSION.getValue());
+                sender.sendMessage(prefix + ConfigValue.MESSAGES_NOPERMISSION.getValue());
                 return false;
             }
+
             this.chestHuntManager.stop();
             this.chestHuntManager.start();
-            sender.sendMessage(prefix+ConfigValue.MESSAGES_CHESTHUNTFORCESTART.getValue());
+            sender.sendMessage(prefix + ConfigValue.MESSAGES_CHESTHUNTFORCESTART.getValue());
             return true;
         }
+
         if(args[0].equalsIgnoreCase("panic")){
             if(!sender.hasPermission("chesthunt.panic")){
-                sender.sendMessage(prefix+ConfigValue.MESSAGES_NOPERMISSION.getValue());
+                sender.sendMessage(prefix + ConfigValue.MESSAGES_NOPERMISSION.getValue());
                 return false;
             }
-            sender.sendMessage(prefix+ConfigValue.MESSAGES_PANIC.getValue());
+
+            sender.sendMessage(prefix + ConfigValue.MESSAGES_PANIC.getValue());
             plugin.panic();
             return true;
         }
+
         if(args[0].equalsIgnoreCase("savedebug")){
             if(!sender.hasPermission("chesthunt.savedebug")){
-                sender.sendMessage(prefix+ConfigValue.MESSAGES_NOPERMISSION.getValue());
+                sender.sendMessage(prefix + ConfigValue.MESSAGES_NOPERMISSION.getValue());
                 return false;
             }
-            sender.sendMessage(prefix+ConfigValue.MESSAGES_DEBUGSAVED.getValue());
+
+            sender.sendMessage(prefix + ConfigValue.MESSAGES_DEBUGSAVED.getValue());
             LoggingManager.getInstance().saveDebug(null, true);
             return true;
         }
+
         sendHelpMessage(sender);
         return false;
     }
 
     private void sendHelpMessage(CommandSender sender){
         List<String> helpMessage = ConfigValue.MESSAGES_HELP.getListValues();
+
         for(String line : helpMessage){
             sender.sendMessage(line);
         }

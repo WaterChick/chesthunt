@@ -13,7 +13,7 @@ import java.util.List;
 public class ChestHuntTabCompleter implements TabCompleter {
 
     private final List<String> subcommands = Arrays.asList(
-            "reload", "gui", "forcestart", "panic", "savedebug"
+            "reload", "gui", "forcestart", "panic", "savedebug", "setcenter"
     );
 
     @Override

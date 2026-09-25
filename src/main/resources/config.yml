@@ -4,6 +4,8 @@ world: 'world'
 
 # Radius in world around spawn location
 radius: 250
+center_x: 0
+center_z: 0
 
 
 # Chest Hunt will only start on the specified days and at the specified times.

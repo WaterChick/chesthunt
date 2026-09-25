@@ -53,6 +53,8 @@ public class MainConfig extends Config {
     @Override
     public void onSave() {
         getConfig().set("panic", ConfigValue.PANIC.getValue());
+        getConfig().set("center_x", ConfigValue.CENTER_X.getValue());
+        getConfig().set("center_z", ConfigValue.CENTER_Z.getValue());
     }
 
     @Override

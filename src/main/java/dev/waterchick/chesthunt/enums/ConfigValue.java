@@ -4,6 +4,8 @@ import java.util.List;
 
 public enum ConfigValue {
     RADIUS("250"),
+    CENTER_X("0"),
+    CENTER_Z("0"),
     WORLD("world"),
     DEBUG("false"),
     MAX_ITEMS_IN_CHEST("3"),
@@ -13,7 +15,8 @@ public enum ConfigValue {
     CHEST_HUNT_SPAWN_DAYS(List.of("WEDNESDAY")),
     CHEST_HUNT_SPAWN_TIMES(List.of("12:00")),
 
-
+    MESSAGES_SETCENTER_SUCCESS("&aSuccessfully set the Chest Hunt center to X: {x} Z: {z}"),
+    MESSAGES_SETCENTER_FAILED("&cX and Z coordinates must be whole numbers."),
     MESSAGES_PREFIX("&8[&6ChestHunt&8] &7"),
     MESSAGES_CONFIGRELOADED("&aConfig reloaded"),
     MESSAGES_NOPERMISSION("&cNo permission"),

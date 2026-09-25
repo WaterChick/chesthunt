@@ -105,6 +105,10 @@ public final class Chesthunt extends JavaPlugin {
         this.messageConfig.reloadConfig();
     }
 
+    public MainConfig getMainConfig() {
+        return mainConfig;
+    }
+
     public void panic() {
         LoggingManager loggingManager = LoggingManager.getInstance();
         loggingManager.saveDebug("panic", true);

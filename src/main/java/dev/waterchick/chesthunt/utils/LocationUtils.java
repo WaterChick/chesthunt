@@ -18,8 +18,11 @@ public class LocationUtils {
 
     public static void findRandomSafeLocation(World world, JavaPlugin plugin, Consumer<Location> callback) {
         int radius = Integer.parseInt(ConfigValue.RADIUS.getValue());
+
+        int centerX = Integer.parseInt(ConfigValue.CENTER_X.getValue());
+        int centerZ = Integer.parseInt(ConfigValue.CENTER_Z.getValue());
+
         Random random = new Random();
-        Location spawn = world.getSpawnLocation();
 
         new BukkitRunnable() {
             int totalAttempts = 0;
@@ -27,8 +30,10 @@ public class LocationUtils {
             @Override
             public void run() {
                 for (int i = 0; i < ATTEMPTS_PER_TICK; i++) {
-                    int x = spawn.getBlockX() + random.nextInt(2 * radius) - radius;
-                    int z = spawn.getBlockZ() + random.nextInt(2 * radius) - radius;
+
+                    int x = centerX + random.nextInt(2 * radius) - radius;
+                    int z = centerZ + random.nextInt(2 * radius) - radius;
+
                     int y = world.getHighestBlockYAt(x, z);
 
                     Block block = world.getBlockAt(x, y, z);
@@ -36,8 +41,14 @@ public class LocationUtils {
 
                     totalAttempts++;
 
-                    if (block.getType().isSolid() && block.getType() != Material.BARRIER && blockAbove.getType() == Material.AIR) {
-                        LoggingManager.getInstance().debug("Found a safe location after: " + totalAttempts + " attempts.");
+                    if (block.getType().isSolid()
+                            && block.getType() != Material.BARRIER
+                            && blockAbove.getType() == Material.AIR) {
+
+                        LoggingManager.getInstance().debug(
+                                "Found a safe location after: " + totalAttempts + " attempts."
+                        );
+
                         cancel();
                         callback.accept(blockAbove.getLocation());
                         return;
