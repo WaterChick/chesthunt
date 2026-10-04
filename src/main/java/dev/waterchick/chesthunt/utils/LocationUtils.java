@@ -22,6 +22,10 @@ public class LocationUtils {
         int centerX = Integer.parseInt(ConfigValue.CENTER_X.getValue());
         int centerZ = Integer.parseInt(ConfigValue.CENTER_Z.getValue());
 
+        LoggingManager.getInstance().getLogger().info(
+                "ChestHunt center: X=" + centerX + " Z=" + centerZ
+        );
+
         Random random = new Random();
 
         new BukkitRunnable() {
@@ -34,25 +38,29 @@ public class LocationUtils {
                     int x = centerX + random.nextInt(2 * radius) - radius;
                     int z = centerZ + random.nextInt(2 * radius) - radius;
 
-                    int y = world.getHighestBlockYAt(x, z);
-
-                    Block block = world.getBlockAt(x, y, z);
-                    Block blockAbove = world.getBlockAt(x, y + 1, z);
+                    int startY = world.getHighestBlockYAt(x, z);
 
                     totalAttempts++;
 
-                    if (block.getType().isSolid()
-                            && block.getType() != Material.BARRIER
-                            && blockAbove.getType() == Material.AIR) {
+                    for (int y = startY; y >= world.getMinHeight(); y--) {
+                        Block block = world.getBlockAt(x, y, z);
+                        Block blockAbove = world.getBlockAt(x, y + 1, z);
 
-                        LoggingManager.getInstance().debug(
-                                "Found a safe location after: " + totalAttempts + " attempts."
-                        );
+                        if (block.getType().isSolid()
+                                && block.getType() != Material.BARRIER
+                                && blockAbove.getType().isAir()) {
 
-                        cancel();
-                        callback.accept(blockAbove.getLocation());
-                        return;
+                            LoggingManager.getInstance().debug(
+                                    "Found a safe location after: " + totalAttempts + " attempts."
+                            );
+
+                            cancel();
+                            callback.accept(blockAbove.getLocation());
+                            return;
+                        }
                     }
+
+                    
                 }
             }
         }.runTaskTimer(plugin, 0L, 1L);

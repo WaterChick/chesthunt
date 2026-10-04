@@ -94,7 +94,9 @@ public final class Chesthunt extends JavaPlugin {
         if(playerDataConfig != null){
             this.playerDataConfig.saveConfig();
         }
-        this.chestHuntManager.stop();
+        if(chestHuntManager != null) {
+            this.chestHuntManager.stop();
+        }
         LoggingManager loggingManager = LoggingManager.getInstance();
         loggingManager.saveDebug(null, false);
     }
